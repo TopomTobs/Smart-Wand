@@ -1,0 +1,38 @@
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+void shellyOn() {
+  // -------- CONFIG --------
+  const char* WIFI_SSID = "DEIN_WLAN";
+  const char* WIFI_PASS = "DEIN_PASS";
+
+  const char* MQTT_HOST = "192.168.1.100";   // Home Assistant IP
+  const int   MQTT_PORT = 1883;
+  const char* MQTT_USER = "mqtt_user";
+  const char* MQTT_PASS = "mqtt_pass";
+
+  const char* TOPIC = "shellies/shellyplug-ABC123/relay/0/command";
+  // ------------------------
+
+  static WiFiClient wifiClient;
+  static PubSubClient mqtt(wifiClient);
+
+  // WLAN verbinden (nur wenn nicht verbunden)
+  if (WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(100);
+    }
+  }
+
+  // MQTT Broker setzen
+  mqtt.setServer(MQTT_HOST, MQTT_PORT);
+
+  // MQTT verbinden (nur wenn nötig)
+  if (!mqtt.connected()) {
+    mqtt.connect("esp32-one-function", MQTT_USER, MQTT_PASS);
+  }
+
+  // Shelly einschalten
+  mqtt.publish(TOPIC, "on");
+}
