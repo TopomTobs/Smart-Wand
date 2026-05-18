@@ -100,6 +100,19 @@ def main():
 
     print("Training complete.")
 
+    print("Arduino")
+    scaler = pipeline.named_steps["scaler"]
+
+    print("MEANS =", scaler.mean_.tolist())
+    print("STDS  =", scaler.scale_.tolist())
+
+    print("Arduino Ende")
+    np.savetxt("X_train.csv", X_train, delimiter=",")
+    np.savetxt("y_train.csv", y_train, delimiter=",", fmt="%d")
+    print(X_train.shape)
 
 if __name__ == "__main__":
     main()
+
+
+
